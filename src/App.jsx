@@ -9,8 +9,12 @@ const router = createBrowserRouter([
     element: <Home />,
   },
   {
-    path: "/verify/:authString",
+    path: "verify/:authString",
     element: <Verify />,
+  },
+  {
+    path: "verify/",
+    element: <h1>Verify page</h1>,
   },
 ]);
 function App() {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaLock } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { IoMdEye } from "react-icons/io";
@@ -17,6 +17,7 @@ const Verify = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
 
   const hasNumber = /\d/;
   const hasLowercase = /[a-z]/;
@@ -97,6 +98,7 @@ const Verify = () => {
           setPassword("");
           setEmail("");
           setConfirmPassword("");
+          navigate("/");
         }
       })
       .catch((error) => {
