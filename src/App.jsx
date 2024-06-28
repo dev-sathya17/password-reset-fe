@@ -9,11 +9,11 @@ const router = createBrowserRouter([
     element: <Home />,
   },
   {
-    path: "verify/:authString",
+    path: "/verify/:authString",
     element: <Verify />,
   },
   {
-    path: "verify/",
+    path: "/verify",
     element: <h1>Verify page</h1>,
   },
 ]);
