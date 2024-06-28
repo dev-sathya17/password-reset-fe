@@ -12,10 +12,6 @@ const router = createBrowserRouter([
     path: "/verify/:authString",
     element: <Verify />,
   },
-  {
-    path: "/verify",
-    element: <h1>Verify page</h1>,
-  },
 ]);
 function App() {
   return <RouterProvider router={router} />;

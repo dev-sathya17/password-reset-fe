@@ -1,29 +1,31 @@
-import axios from "axios";
 import { useState } from "react";
 import "./Page.css";
 import { MdOutlineMail } from "react-icons/md";
+import userService from "../services/userService";
 const Home = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {
     if (!email.includes("@") || !email.includes(".com")) {
       setError("Please enter a valid email");
       return;
     }
+    setLoading(true);
 
-    axios
-      .post("https://password-reset-j80k.onrender.com/users/forgot", {
-        email,
-      })
+    userService
+      .forgot(email)
       .then((response) => {
         if (response.status === 200) {
           alert(response.data.message);
           setEmail("");
+          setLoading(false);
         }
       })
       .catch((error) => {
-        console.log(error);
+        setLoading(false);
+        alert(error.response.data.message);
       });
   };
 
@@ -60,10 +62,10 @@ const Home = () => {
         )}
         <button
           onClick={handleSubmit}
-          className={error ? "button-error" : "button"}
-          disabled={error ? true : false}
+          className={error || loading ? "button-error" : "button"}
+          disabled={error || loading ? true : false}
         >
-          SUBMIT
+          {loading ? "Loading..." : "SUBMIT"}
         </button>
       </div>
     </div>

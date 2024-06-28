@@ -1,10 +1,11 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaLock } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
+import "./Page.css";
+import userService from "../services/userService";
 
 const Verify = () => {
   const { authString } = useParams();
@@ -17,6 +18,7 @@ const Verify = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const hasNumber = /\d/;
@@ -25,22 +27,19 @@ const Verify = () => {
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
 
   useEffect(() => {
-    verify();
+    userService
+      .verify(authString)
+      .then((response) => {
+        if (response.status === 200) {
+          setEmail(response.data.email);
+          setShowForm(true);
+        }
+      })
+      .catch((error) => {
+        console.warn(error.response.data.message);
+        setShowForm(false);
+      });
   }, []);
-
-  const verify = async () => {
-    try {
-      const response = await axios.get(
-        `https://password-reset-j80k.onrender.com/users/verify/${authString}`
-      );
-      if (response.status === 200) {
-        setEmail(response.data.email);
-        setShowForm(true);
-      }
-    } catch (error) {
-      setShowForm(false);
-    }
-  };
 
   const isValidPassword = (password) => {
     if (password.length < 8 || password.length > 20) {
@@ -87,22 +86,27 @@ const Verify = () => {
   };
 
   const handleConfirm = () => {
-    axios
-      .post("https://password-reset-j80k.onrender.com/users/reset", {
-        email,
-        password,
-      })
+    if (error) {
+      alert(error);
+      return;
+    }
+    setLoading(true);
+
+    userService
+      .reset(email, password)
       .then((response) => {
         if (response.status === 200) {
           alert(response.data.message);
           setPassword("");
           setEmail("");
           setConfirmPassword("");
+          setLoading(false);
           navigate("/");
         }
       })
       .catch((error) => {
         console.log(error);
+        setLoading(false);
       });
   };
 
@@ -158,7 +162,13 @@ const Verify = () => {
           ) : (
             <></>
           )}
-          <button onClick={handleConfirm}>CONFIRM</button>
+          <button
+            onClick={handleConfirm}
+            className={error || loading ? "button-error" : "button"}
+            disabled={error || loading ? true : false}
+          >
+            {loading ? "Loading..." : "SUBMIT"}
+          </button>
         </div>
       ) : (
         <div className="not-found-wrapper">
